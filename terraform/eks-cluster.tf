@@ -47,6 +47,10 @@ module "myapp-eks" {
       desired_size = 3
       max_size     = 3
       min_size     = 1
+      cluster_primary_security_group_id = aws_default_security_group.myapp-sg.id
+      vpc_security_group_ids = [aws_default_security_group.myapp-sg.id]
+      source_security_group_ids = [aws_default_security_group.myapp-sg.id]
+      ec2_ssh_key = "AWS-servers-key"
       subnet_ids = module.myapp-vpc.private_subnets
 
 
