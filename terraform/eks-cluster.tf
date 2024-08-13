@@ -10,7 +10,7 @@ terraform {
 
   }
 }
-
+//EKS
 module "myapp-eks" {
   source          = "terraform-aws-modules/eks/aws"
   version         = "20.11.1"
@@ -19,6 +19,7 @@ module "myapp-eks" {
 
   subnet_ids = concat(module.myapp-vpc.private_subnets, module.myapp-vpc.public_subnets)
   vpc_id     = module.myapp-vpc.vpc_id
+  cluster_security_group_id = aws_default_security_group.myapp-sg.id
 
   enable_cluster_creator_admin_permissions = true
   cluster_endpoint_public_access  = true
@@ -46,6 +47,8 @@ module "myapp-eks" {
       desired_size = 3
       max_size     = 3
       min_size     = 1
+      subnet_ids = module.myapp-vpc.private_subnets
+
 
       instance_types = ["t2.medium"]
       key_name = "AWS-servers-key"
@@ -78,6 +81,7 @@ resource "aws_instance" "bastion" {
   instance_type          = "t2.micro"
   key_name               = "AWS-servers-key"
   subnet_id              = element(module.myapp-vpc.public_subnets, 0) // первая публичная подсеть
+  security_groups = [aws_default_security_group.myapp-sg.id]
   associate_public_ip_address = true
 
   tags = {

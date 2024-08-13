@@ -80,6 +80,12 @@ resource "aws_default_security_group" "myapp-sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   egress {
+    from_port   = -1
+    protocol    = "ICMP"
+    to_port     = -1
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
     from_port       = 8080
     protocol        = "tcp"
     to_port         = 8080
@@ -164,12 +170,14 @@ resource "aws_network_acl" "myapp-nacl" {
   }
 
   egress {
-    rule_no = 121
-    protocol       = "1"  # ICMP
-    action    = "allow"
+    rule_no        = 121
+    protocol       = "1"
+    action         = "allow"
     cidr_block     = "0.0.0.0/0"
-    from_port      = 0  # Разрешить все типы ICMP
-    to_port        = 65535  # Разрешить все коды ICMP
+    from_port      = 0
+    to_port        = 65535
+    icmp_type      = -1
+    icmp_code      = -1
   }
 
   tags = {
