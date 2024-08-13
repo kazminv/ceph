@@ -10,6 +10,29 @@ terraform {
 
   }
 }
+
+resource "aws_launch_template" "additional_EBS" {
+  key_name = "AWS-servers-key" # попытка добавить SG кластера сюда ниже
+  vpc_security_group_ids = [aws_default_security_group.myapp-sg.id, module.myapp-eks.cluster_security_group_id]
+  block_device_mappings {
+    device_name = "/dev/sdf"
+    ebs {
+      volume_size = 8
+      volume_type = "gp3"
+    }
+  }
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+//Создание 3х дисков для привязки к node group
+#resource "aws_ebs_volume" "additional_disk" {
+  #count             = 3  # Учитывая, что у нас 3 узла
+ # availability_zone = "us-east-1a"  # Или соответствующая зона
+ # size              = 8  # Размер диска в ГБ
+  #type              = "gp3"
+#}
 //EKS
 module "myapp-eks" {
   source          = "terraform-aws-modules/eks/aws"
@@ -52,18 +75,28 @@ module "myapp-eks" {
       source_security_group_ids = [aws_default_security_group.myapp-sg.id]
       ec2_ssh_key = "AWS-servers-key"
       subnet_ids = module.myapp-vpc.private_subnets
-
+      create_launch_template = false
+      launch_template_name = aws_launch_template.additional_EBS.name
+      #remote_access = {
+       #ec2_ssh_key = "AWS-servers-key"
+      #}
 
       instance_types = ["t2.medium"]
       key_name = "AWS-servers-key"
+      use_custom_launch_template = true
+      launch_template_id = aws_launch_template.additional_EBS.id
+      launch_template_version = "$Latest"
       additional_tags = {
         application = "myapp"
         Terraform   = "true"
       }
     }
   }
-
 }
+output "cluster_security_group_id" {
+  value = module.myapp-eks.cluster_security_group_id
+}
+
 data "aws_eks_cluster" "myapp-cluster" {
   name = module.myapp-eks.cluster_name
   depends_on = [module.myapp-eks]
