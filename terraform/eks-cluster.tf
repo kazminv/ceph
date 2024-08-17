@@ -12,12 +12,21 @@ terraform {
 }
 
 resource "aws_launch_template" "additional_EBS" {
+
+  name = "my_template"
   key_name = "AWS-servers-key" # попытка добавить SG кластера сюда ниже
-  vpc_security_group_ids = [aws_default_security_group.myapp-sg.id, module.myapp-eks.cluster_security_group_id]
+  vpc_security_group_ids = [aws_default_security_group.myapp-sg.id]
   block_device_mappings {
     device_name = "/dev/sdf"
     ebs {
       volume_size = 8
+      volume_type = "gp3"
+    }
+  }
+  block_device_mappings {
+    device_name = "/dev/sdg"
+    ebs {
+      volume_size = 4
       volume_type = "gp3"
     }
   }
@@ -76,14 +85,14 @@ module "myapp-eks" {
       ec2_ssh_key = "AWS-servers-key"
       subnet_ids = module.myapp-vpc.private_subnets
       create_launch_template = false
-      launch_template_name = aws_launch_template.additional_EBS.name
-      #remote_access = {
-       #ec2_ssh_key = "AWS-servers-key"
-      #}
-
+      #launch_template_name = aws_launch_template.additional_EBS.name
+      remote_access = {
+       ec2_ssh_key = "AWS-servers-key"
+      }
       instance_types = ["t2.medium"]
       key_name = "AWS-servers-key"
-      use_custom_launch_template = true
+
+      use_custom_launch_template = false
       launch_template_id = aws_launch_template.additional_EBS.id
       launch_template_version = "$Latest"
       additional_tags = {
@@ -91,7 +100,9 @@ module "myapp-eks" {
         Terraform   = "true"
       }
     }
+
   }
+
 }
 output "cluster_security_group_id" {
   value = module.myapp-eks.cluster_security_group_id
