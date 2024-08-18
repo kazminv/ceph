@@ -1,8 +1,8 @@
 apiVersion: snapshot.storage.k8s.io/v1
 kind: VolumeSnapshot
 metadata:
-  name: test-snapshot
+  name: test-snapshot-2
 spec:
   volumeSnapshotClassName: test-snapclass
   source:
-    persistentVolumeClaimName: cassandra-data-cassandra-0
+    persistentVolumeClaimName: block-claim-4

@@ -4,7 +4,7 @@ metadata:
   name: app
 spec:
   containers:
-    - name: app
+    - name: app-2
       image: busybox
       command: ["/bin/sh", "-c"]
       args: ["tail -f /dev/null"]
@@ -14,4 +14,4 @@ spec:
   volumes:
     - name: data
       persistentVolumeClaim:
-        claimName: block-claim
+        claimName: block-claim-2

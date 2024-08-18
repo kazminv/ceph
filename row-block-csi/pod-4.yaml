@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: app
+  name: app-4
 spec:
   containers:
-    - name: app
+    - name: app-4
       image: busybox
       command: ["/bin/sh", "-c"]
       args: ["tail -f /dev/null"]
@@ -14,4 +14,4 @@ spec:
   volumes:
     - name: data
       persistentVolumeClaim:
-        claimName: block-claim
+        claimName: block-claim-4

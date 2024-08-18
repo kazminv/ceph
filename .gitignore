@@ -9,6 +9,7 @@ terraform/.terraform/
 /terraform/.terraform/
 rook/
 /rook/
+aws-eks-se-samples/
 
 ### IntelliJ IDEA ###
 .idea/modules.xml

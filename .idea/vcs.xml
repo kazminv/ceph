@@ -2,6 +2,8 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/aws-ebs-csi-driver" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/aws-eks-se-samples" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/rook" vcs="Git" />
   </component>
 </project>
