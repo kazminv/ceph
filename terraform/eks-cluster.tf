@@ -35,13 +35,6 @@ resource "aws_launch_template" "additional_EBS" {
   }
 }
 
-//Создание 3х дисков для привязки к node group
-#resource "aws_ebs_volume" "additional_disk" {
-  #count             = 3  # Учитывая, что у нас 3 узла
- # availability_zone = "us-east-1a"  # Или соответствующая зона
- # size              = 8  # Размер диска в ГБ
-  #type              = "gp3"
-#}
 //EKS
 module "myapp-eks" {
   source          = "terraform-aws-modules/eks/aws"
@@ -103,7 +96,8 @@ module "myapp-eks" {
   }
 }
 
-//создание новой доп ROLE
+//add new ROLE
+/*
 resource "aws_iam_role" "additional_eks_role" {
   name = "additional_eks_role_for_sa_tf"
   assume_role_policy = jsonencode({
@@ -124,6 +118,8 @@ resource "aws_iam_role" "additional_eks_role" {
     ]
   })
 }
+
+ */
   //create a new policy
 resource "aws_iam_policy" "additional_policy" {
   name        = "additional_eks_policy_tf"
@@ -144,22 +140,24 @@ resource "aws_iam_policy" "additional_policy" {
     ]
   })
 }
-// привязываю policy к ROLE
+// attach policy к ROLE
+/*
 resource "aws_iam_role_policy_attachment" "attach_policy" {
   role       = aws_iam_role.additional_eks_role.name
   policy_arn = aws_iam_policy.additional_policy.arn
 }
-//create a service account and attach to a new ROLE
-resource "kubernetes_service_account" "ebs_csi_controller_sa" {
-  metadata {
-    name      = "ebs-csi-controller-sa"
-    namespace = "kube-system"
-    annotations = {
-      "eks.amazonaws.com/role-arn" = aws_iam_role.additional_eks_role.arn
-    }
-  }
-}
 
+ */
+//create a service account and attach to a new ROLE
+//resource "kubernetes_service_account" "ebs_csi_controller_sa" {
+  //metadata {
+    //name      = "ebs-csi-controller-sa"
+    //namespace = "kube-system"
+    //annotations = {
+      //"eks.amazonaws.com/role-arn" = aws_iam_role.additional_eks_role.arn
+    //}
+  //}
+//}
 
 output "cluster_security_group_id" {
   value = module.myapp-eks.cluster_security_group_id
@@ -180,12 +178,12 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.myapp-cluster.certificate_authority.0.data)
 }
 
-// Создание EC2 инстанса для Bastion
+// EC2 Bastion
 #resource "aws_instance" "bastion" {
   #ami                    = "ami-0ae8f15ae66fe8cda"
   #instance_type          = "t2.micro"
   #key_name               = "AWS-servers-key"
-  #subnet_id              = element(module.myapp-vpc.public_subnets, 0) // первая публичная подсеть
+  #subnet_id              = element(module.myapp-vpc.public_subnets, 0)
   #security_groups = [aws_default_security_group.myapp-sg.id]
   #associate_public_ip_address = true
 

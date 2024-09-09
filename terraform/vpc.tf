@@ -42,12 +42,12 @@ module "myapp-vpc" {
 resource "aws_default_security_group" "myapp-sg" {
   vpc_id = module.myapp-vpc.vpc_id
 
-  ingress {
-    from_port   = 0         # Начальный порт (0 означает любой порт)
-    to_port     = 0         # Конечный порт (0 означает любой порт)
-    protocol    = "-1"      # "-1" означает любой протокол
-    cidr_blocks = ["0.0.0.0/0"] # Разрешает весь трафик из любого источника
-  }
+  //ingress {
+   // from_port   = 0
+   // to_port     = 0
+   // protocol    = "-1"
+   // cidr_blocks = ["0.0.0.0/0"]
+ // }
 
   ingress {
     from_port   = 22
@@ -56,10 +56,10 @@ resource "aws_default_security_group" "myapp-sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
-    from_port   = -1  // Разрешить все типы ICMP
+    from_port   = -1
     protocol    = "icmp"
-    to_port     = -1  // Разрешить все коды ICMP
-    cidr_blocks = ["0.0.0.0/0"]  // Замените на CIDR вашего бастиона для большей безопасности
+    to_port     = -1
+    cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
     from_port   = 8080
@@ -110,23 +110,23 @@ resource "aws_network_acl" "myapp-nacl" {
   )
   ingress {
     rule_no = 115
-    from_port   = 0  // Разрешить все типы ICMP
+    from_port   = 0
     protocol    = "icmp"
-    to_port     = 0  // Разрешить все коды ICMP
+    to_port     = 0
     action    = "allow"
-    cidr_block = "0.0.0.0/0"  // Замените на CIDR вашего бастиона для большей безопасности
+    cidr_block = "0.0.0.0/0"
   }
   ingress {
     rule_no = 114
-    from_port   = 0         # Начальный порт (0 означает любой порт)
-    to_port     = 0         # Конечный порт (0 означает любой порт)
-    protocol    = "-1"      # "-1" означает любой протокол
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     action    = "allow"
-    cidr_block = "0.0.0.0/0" # Разрешает весь трафик из любого источника
+    cidr_block = "0.0.0.0/0"
   }
   ingress {
     rule_no = 110
-    protocol       = "6"  # TCP
+    protocol       = "6"
     action    = "allow"
     cidr_block     = "0.0.0.0/0"
     from_port      = 22
@@ -135,11 +135,11 @@ resource "aws_network_acl" "myapp-nacl" {
 
   ingress {
     rule_no = 111
-    protocol       = "1"  # ICMP
+    protocol       = "1"
     action    = "allow"
     cidr_block     = "0.0.0.0/0"
-    from_port      = 0  # Разрешить все типы ICMP
-    to_port        = 65535  # Разрешить все коды ICMP
+    from_port      = 0
+    to_port        = 65535
   }
 
   ingress {
